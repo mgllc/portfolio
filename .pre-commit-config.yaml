@@ -1,0 +1,51 @@
+# Pre-commit hooks: catches secrets, junk, and obvious lint issues
+# before they ever leave your machine.
+#
+# Setup (once per machine):
+#   pip install pre-commit
+#   pre-commit install
+#
+# Runs automatically on every `git commit` from then on.
+# Run on the whole repo manually with: pre-commit run --all-files
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1000"]
+      - id: detect-private-key
+      - id: mixed-line-ending
+      - id: check-case-conflict
+      - id: check-yaml
+      - id: check-json
+
+  # Secret scanning — same engine used in CI, so nothing that would
+  # fail the pipeline can even get committed.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  # --- Language-specific hooks: uncomment what applies to this repo ---
+
+  # Python
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   rev: v0.8.0
+  #   hooks:
+  #     - id: ruff
+  #       args: [--fix]
+  #     - id: ruff-format
+
+  # JavaScript / TypeScript
+  # - repo: https://github.com/pre-commit/mirrors-eslint
+  #   rev: v9.15.0
+  #   hooks:
+  #     - id: eslint
+  # - repo: https://github.com/pre-commit/mirrors-prettier
+  #   rev: v4.0.0-alpha.8
+  #   hooks:
+  #     - id: prettier

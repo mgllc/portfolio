@@ -1,0 +1,4 @@
+# Every file in this repo requires review from the owner below
+# before merging (enforce via branch protection -> "Require review
+# from Code Owners").
+* @{{GITHUB_USERNAME}}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSun — Developer Portfolio</title>
+  <meta name="description" content="Software engineering portfolio and project showcase." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <p class="eyebrow">Portfolio</p>
+      <h1>JSun</h1>
+      <p class="tagline">Software engineer building secure, well-tested tools — with security baked into the pipeline, not bolted on after.</p>
+      <nav class="links">
+        <a href="https://github.com/mgllc" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:jsunkavalli@govdoss.com">Email</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">About</h2>
+      <p>I build tools across Python, TypeScript, and Julia, with a consistent
+      DevSecOps baseline applied to every repo: static analysis, secret
+      scanning, and dependency review running on every push — not a
+      once-a-year audit.</p>
+    </section>
+
+    <section class="practices" aria-labelledby="practices-heading">
+      <h2 id="practices-heading">How I build</h2>
+      <ul class="practice-grid">
+        <li><strong>SAST</strong><span>CodeQL runs on every push and PR</span></li>
+        <li><strong>Secret scanning</strong><span>Gitleaks in pre-commit hooks and CI</span></li>
+        <li><strong>Dependency review</strong><span>PRs blocked on high-severity vulnerable deps</span></li>
+        <li><strong>Branch protection</strong><span>Required reviews + passing checks before merge</span></li>
+      </ul>
+    </section>
+
+    <section class="projects" aria-labelledby="projects-heading">
+      <h2 id="projects-heading">Projects</h2>
+      <div id="project-list" class="project-grid">
+        <p class="loading">Loading projects…</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>&copy; <span id="year"></span> JSun. Built with plain HTML/CSS/JS, deployed via GitHub Pages.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

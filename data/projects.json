@@ -1,0 +1,26 @@
+[
+  {
+    "name": "crawler",
+    "tagline": "A minimal, dependency-free Python web crawler.",
+    "description": "Breadth-first crawl with configurable depth/page limits, robots.txt compliance, sitemap seeding, and JSON output of discovered links and response metadata.",
+    "repo": "https://github.com/mgllc/crawler",
+    "demo": "",
+    "tech": ["Python", "GitHub Actions"],
+    "highlights": [
+      "CodeQL + Gitleaks + dependency review on every push/PR",
+      "Ruff lint + pytest matrix across Python 3.11/3.12"
+    ]
+  },
+  {
+    "name": "palantir-julia-integration",
+    "tagline": "A Julia HTTP service built around an explicit OODA-loop request pipeline.",
+    "description": "Exposes small analytics endpoints with per-IP rate limiting, optional API-key auth, hardened response headers, and structured JSON audit logging keyed by a correlation ID.",
+    "repo": "https://github.com/mgllc/palantir-julia-integration",
+    "demo": "",
+    "tech": ["Julia", "Docker", "HTTP.jl"],
+    "highlights": [
+      "Deny-by-default auth + sliding-window rate limiting",
+      "Container build + health-check smoke test in CI"
+    ]
+  }
+]
