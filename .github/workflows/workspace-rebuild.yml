@@ -1,0 +1,80 @@
+name: Workspace rebuild
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 4 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: workspace-rebuild-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  rebuild:
+    name: Static site syntax, local assets, JSON schema and package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '22'
+      - name: Validate JavaScript syntax
+        run: node --check script.js
+      - name: Validate static site and project data
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlsplit
+          class Assets(HTMLParser):
+              def handle_starttag(self, tag, attrs):
+                  for key, value in attrs:
+                      if key not in ('src', 'href') or not value:
+                          continue
+                      u = urlsplit(value)
+                      if not u.scheme and not u.netloc and u.path:
+                          assert Path(u.path).is_file(), 'Missing local asset: ' + u.path
+          for name in ('index.html', 'styles.css', 'script.js'):
+              assert Path(name).stat().st_size > 0, 'Empty site asset'
+          Assets().feed(Path('index.html').read_text())
+          projects = json.loads(Path('data/projects.json').read_text())
+          assert isinstance(projects, list) and projects
+          for p in projects:
+              assert all(isinstance(p.get(k), str) and p[k] for k in ('name', 'repo', 'description'))
+              assert urlsplit(p['repo']).scheme == 'https'
+              assert isinstance(p.get('tech'), list) and all(isinstance(t, str) for t in p['tech'])
+          print('Static assets and project schema valid; no deployment performed')
+          PY
+      - name: Package only public site assets
+        run: tar -czf workspace-site.tar.gz index.html styles.css script.js data/projects.json
+      - name: Record execution evidence
+        if: always()
+        env:
+          BUILD_STATUS: ${{ job.status }}
+          VALIDATION_SCOPE: 'Static site syntax, local assets, JSON schema and package'
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = dict(schema=1, repository=os.environ['GITHUB_REPOSITORY'],
+                        commit=os.environ['GITHUB_SHA'], run_id=os.environ['GITHUB_RUN_ID'],
+                        status=os.environ['BUILD_STATUS'], scope=os.environ['VALIDATION_SCOPE'])
+          Path('workspace-rebuild.json').write_text(json.dumps(report, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+              f.write('Workspace rebuild: ' + report['status'] + '\n\n' + report['scope'] + '\n')
+          PY
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: workspace-rebuild-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            workspace-rebuild.json
+            workspace-site.tar.gz
+          if-no-files-found: error
+          retention-days: 30
